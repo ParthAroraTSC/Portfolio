@@ -13,7 +13,6 @@ export class Gedit extends Component {
     }
 
     componentDidMount() {
-        emailjs.init(process.env.NEXT_PUBLIC_USER_ID);
     }
 
     sendMessage = async () => {
@@ -42,21 +41,31 @@ export class Gedit extends Component {
 
         this.setState({ sending: true });
 
-        const serviceID = process.env.NEXT_PUBLIC_SERVICE_ID;
-        const templateID = process.env.NEXT_PUBLIC_TEMPLATE_ID;
-        const templateParams = {
-            'name': name,
-            'subject': subject,
-            'message': message,
-        }
+        try {
+            const response = await fetch('/api/sendEmail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name,
+                    subject,
+                    message,
+                }),
+            });
 
-        emailjs.send(serviceID, templateID, templateParams).then(() => {
+            if (response.ok) {
+                this.setState({ sending: false });
+                $("#close-gedit").trigger("click");
+            } else {
+                throw new Error('Failed to send email');
+            }
+        } catch (error) {
+            console.error('Error:', error);
             this.setState({ sending: false });
-            $("#close-gedit").trigger("click");
-        }).catch(() => {
-            this.setState({ sending: false });
-            $("#close-gedit").trigger("click");
-        })
+            // Optionally show an error message on the UI
+            alert("Failed to send message. Please check your connection or try again later.");
+        }
 
         ReactGA.event({
             category: "Send Message",

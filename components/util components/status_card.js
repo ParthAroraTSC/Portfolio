@@ -24,13 +24,18 @@ export class StatusCard extends Component {
 		super();
 		this.wrapperRef = React.createRef();
 		this.state = {
-			sound_level: 75, // better of setting default values from localStorage
-			brightness_level: 100 // setting default value to 100 so that by default its always full.
+			sound_level: 75,
+			brightness_level: 100,
+			battery_level: 75,
+			is_charging: false,
+			network_status: "Connected"
 		};
 	}
+
 	handleClickOutside = () => {
 		this.props.toggleVisible();
 	};
+
 	componentDidMount() {
 		this.setState({
 			sound_level: localStorage.getItem('sound-level') || 75,
@@ -38,14 +43,45 @@ export class StatusCard extends Component {
 		}, () => {
 			document.getElementById('monitor-screen').style.filter = `brightness(${3 / 400 * this.state.brightness_level +
 				0.25})`;
-		})
+		});
+
+		// Real Battery Data
+		if ('getBattery' in navigator) {
+			navigator.getBattery().then(battery => {
+				this.updateBatteryStatus(battery);
+				battery.onchargingchange = () => this.updateBatteryStatus(battery);
+				battery.onlevelchange = () => this.updateBatteryStatus(battery);
+			});
+		}
+
+		// Real Network Data
+		this.updateNetworkStatus();
+		window.addEventListener('online', this.updateNetworkStatus);
+		window.addEventListener('offline', this.updateNetworkStatus);
+	}
+
+	updateBatteryStatus = (battery) => {
+		this.setState({
+			battery_level: Math.round(battery.level * 100),
+			is_charging: battery.charging
+		});
+	}
+
+	updateNetworkStatus = () => {
+		this.setState({
+			network_status: navigator.onLine ? "Connected" : "Disconnected"
+		});
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('online', this.updateNetworkStatus);
+		window.removeEventListener('offline', this.updateNetworkStatus);
 	}
 
 	handleBrightness = (e) => {
 		this.setState({ brightness_level: e.target.value });
 		localStorage.setItem('brightness-level', e.target.value);
-		// the function below inside brightness() is derived from a linear equation such that at 0 value of slider brightness still remains 0.25 so that it doesn't turn black.
-		document.getElementById('monitor-screen').style.filter = `brightness(${3 / 400 * e.target.value + 0.25})`; // Using css filter to adjust the brightness in the root div.
+		document.getElementById('monitor-screen').style.filter = `brightness(${3 / 400 * e.target.value + 0.25})`;
 	};
 
 	handleSound = (e) => {
@@ -58,7 +94,7 @@ export class StatusCard extends Component {
 			<div
 				ref={this.wrapperRef}
 				className={
-					'absolute bg-ub-cool-grey rounded-md py-4 top-9 right-3 shadow border-black border border-opacity-20 status-card' +
+					'absolute bg-ub-cool-grey rounded-md py-4 top-9 right-3 shadow border-black border border-opacity-20 status-card z-50' +
 					(this.props.visible ? ' visible animateShow' : ' invisible')
 				}
 			>
@@ -95,7 +131,7 @@ export class StatusCard extends Component {
 						<img width="16px" height="16px" src="./themes/Yaru/status/network-wireless-signal-good-symbolic.svg" alt="ubuntu wifi" />
 					</div>
 					<div className="w-2/3 flex items-center justify-between text-gray-400">
-						<span>OnePlus 8 Pro</span>
+						<span>{this.state.network_status}</span>
 						<SmallArrow angle="right" />
 					</div>
 				</div>
@@ -104,7 +140,7 @@ export class StatusCard extends Component {
 						<img width="16px" height="16px" src="./themes/Yaru/status/bluetooth-symbolic.svg" alt="ubuntu bluetooth" />
 					</div>
 					<div className="w-2/3 flex items-center justify-between text-gray-400">
-						<span>Off</span>
+						<span>Visible</span>
 						<SmallArrow angle="right" />
 					</div>
 				</div>
@@ -113,7 +149,7 @@ export class StatusCard extends Component {
 						<img width="16px" height="16px" src="./themes/Yaru/status/battery-good-symbolic.svg" alt="ubuntu battery" />
 					</div>
 					<div className="w-2/3 flex items-center justify-between text-gray-400">
-						<span>2:40 Remaining (75%)</span>
+						<span>{this.state.is_charging ? "Charging" : "Discharging"} ({this.state.battery_level}%)</span>
 						<SmallArrow angle="right" />
 					</div>
 				</div>
