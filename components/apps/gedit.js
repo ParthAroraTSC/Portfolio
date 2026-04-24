@@ -48,35 +48,44 @@ export class Gedit extends Component {
             const timestamp = new Date().toLocaleString('en-IN', { 
                 dateStyle: 'full', timeStyle: 'short', timeZone: 'Asia/Kolkata' 
             });
+
+            // Build a professional, recruiter-ready email
             const formattedMessage = [
-                `Dear Parth Arora,`,
+                `Dear Hiring Team,`,
                 ``,
-                `You have received a new inquiry through your portfolio website.`,
+                `I hope this message finds you well. My name is Parth Arora, and I am a Frontend Developer at Techsolace with a strong passion for Cybersecurity, including SOC Analysis, VAPT, and Network Security.`,
                 ``,
-                `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-                `📧 From: ${name}`,
-                `📋 Subject: ${subject || 'General Inquiry'}`,
-                `🕐 Received: ${timestamp}`,
-                `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+                `I am reaching out to express my interest in potential opportunities where I can contribute my expertise in building secure, high-performance web applications while leveraging my cybersecurity knowledge.`,
                 ``,
-                `Message:`,
+                `───────────────────────────────`,
+                `📋 Subject: ${subject || 'Opportunity Inquiry'}`,
+                ``,
                 `${message}`,
+                `───────────────────────────────`,
                 ``,
-                `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-                `This message was sent via ParthAroraTSC Portfolio`,
-                `https://partharoratsc.github.io`,
+                `I would welcome the opportunity to discuss how my skills and experience align with your team's needs. Please feel free to reach out at your earliest convenience.`,
+                ``,
+                `Best regards,`,
+                `Parth Arora`,
+                `Frontend Developer | Cybersecurity Enthusiast`,
+                `📧 ${name.includes('@') ? name : 'parthxcore@gmail.com'}`,
+                `🔗 https://partharoratsc.github.io`,
+                `💼 https://www.linkedin.com/in/parth-arora-1343b5368/`,
+                ``,
+                `─────`,
+                `Sent on ${timestamp}`,
             ].join('\n');
 
             const result = await emailjs.send(
                 serviceID,
                 templateID,
                 {
-                    from_name: name,
+                    from_name: "Parth Arora",
                     user_name: name,
-                    reply_to: name.includes('@') ? name : undefined,
-                    subject: `🔔 Portfolio Inquiry: ${subject || 'General Inquiry'}`,
+                    reply_to: name.includes('@') ? name : 'parthxcore@gmail.com',
+                    subject: `${subject || 'Professional Inquiry'} — Parth Arora | Frontend Dev & Cybersecurity`,
                     message: formattedMessage,
-                    to_name: "Parth Arora",
+                    to_name: "Hiring Team",
                 }
             );
 
