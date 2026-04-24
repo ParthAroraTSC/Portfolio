@@ -73,7 +73,7 @@ export class AllApplications extends React.Component {
             <div className={"absolute h-full top-7 w-full z-20 pl-12 justify-center md:pl-20 border-black border-opacity-60 bg-black bg-opacity-70"}>
                 <div className={"flex md:pr-20 pt-5 align-center justify-center"}>
                     <div className={"flex w-2/3 h-full items-center pl-2 pr-2 bg-white border-black border-width-2 rounded-xl overflow-hidden md:w-1/3 "}>
-                        <img className={"w-5 h-5"} alt="search icon" src={'./images/logos/search.png'} />
+                        <svg className="w-5 h-5 text-gray-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         <input className={"w-3/4 p-1 bg-transparent focus:outline-none"}
                             placeholder="Type to Search "
                             value={this.state.query}
